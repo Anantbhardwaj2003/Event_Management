@@ -2,10 +2,10 @@ const Event = require('../models/eventModel');
 
 // Create a new event
 const createEvent = async (req, res) => {
-  const { name, description, date, location } = req.body;
+  const { name, description, date, category, location, tags } = req.body;
   const image = req.file ? req.file.path : null;
 
-  if (!name || !description || !date || !location) {
+  if (!name || !description || !date || !category || !location) {
     return res.status(400).json({ message: 'Please add all fields' });
   }
 
@@ -14,8 +14,10 @@ const createEvent = async (req, res) => {
     name,
     description,
     date,
+    category,
     location,
     image,
+    tags,
   });
 
   const createdEvent = await event.save();
@@ -41,7 +43,7 @@ const getEventById = async (req, res) => {
 
 // Update an event
 const updateEvent = async (req, res) => {
-  const { name, description, date, location } = req.body;
+  const { name, description, date, category, location, tags } = req.body;
   const image = req.file ? req.file.path : null;
 
   const event = await Event.findById(req.params.id);
@@ -50,8 +52,10 @@ const updateEvent = async (req, res) => {
     event.name = name || event.name;
     event.description = description || event.description;
     event.date = date || event.date;
+    event.category = category || event.category;
     event.location = location || event.location;
     event.image = image || event.image;
+    event.tags = tags || event.tags;
 
     const updatedEvent = await event.save();
     res.json(updatedEvent);
