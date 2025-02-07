@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createEvent, getEvents, getEventById, updateEvent, deleteEvent } = require('../controllers/eventController');
+const { createEvent, getEvents, getEventById, updateEvent, deleteEvent, joinEvent, leaveEvent } = require('../controllers/eventController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/upload');
 
@@ -18,5 +18,11 @@ router.put('/:id', protect, upload.single('image'), updateEvent);
 
 // Route to delete an event (protected route)
 router.delete('/:id', protect, deleteEvent);
+
+// Route to join an event (protected route)
+router.put('/:id/join', protect, joinEvent);
+
+// Route to leave an event (protected route)
+router.put('/:id/leave', protect, leaveEvent);
 
 module.exports = router;

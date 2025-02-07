@@ -48,7 +48,7 @@ const updateEvent = async (req, res) => {
 
   const event = await Event.findById(req.params.id);
 
-  if (event) {
+  if (event && event.user.toString() === req.user.id) {
     event.name = name || event.name;
     event.description = description || event.description;
     event.date = date || event.date;
@@ -68,9 +68,43 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   const event = await Event.findById(req.params.id);
 
-  if (event) {
+  if (event && event.user.toString() === req.user.id) {
     await event.remove();
     res.json({ message: 'Event removed' });
+  } else {
+    res.status(404).json({ message: 'Event not found' });
+  }
+};
+
+// Join an event
+const joinEvent = async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (event) {
+    if (event.attendees.includes(req.user.id)) {
+      return res.status(400).json({ message: 'You have already joined this event' });
+    }
+
+    event.attendees.push(req.user.id);
+    await event.save();
+    res.json({ message: 'Joined event successfully' });
+  } else {
+    res.status(404).json({ message: 'Event not found' });
+  }
+};
+
+// Leave an event
+const leaveEvent = async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (event) {
+    if (!event.attendees.includes(req.user.id)) {
+      return res.status(400).json({ message: 'You have not joined this event' });
+    }
+
+    event.attendees = event.attendees.filter(attendee => attendee.toString() !== req.user.id);
+    await event.save();
+    res.json({ message: 'Left event successfully' });
   } else {
     res.status(404).json({ message: 'Event not found' });
   }
@@ -82,4 +116,6 @@ module.exports = {
   getEventById,
   updateEvent,
   deleteEvent,
+  joinEvent,
+  leaveEvent,
 };

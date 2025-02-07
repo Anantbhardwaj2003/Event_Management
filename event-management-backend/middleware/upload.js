@@ -9,7 +9,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'event_images',
     format: async (req, file) => 'jpg', // supports promises as well
-    public_id: (req, file) => file.originalname,
+    public_id: (req, file) => `${file.originalname}_${Date.now()}`,
   },
 });
 
