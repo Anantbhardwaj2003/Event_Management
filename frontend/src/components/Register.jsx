@@ -11,17 +11,17 @@ function Register() {
     password: '',
     confirmPassword: ''
   });
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    login({ id: '1', name: formData.name });
-    navigate('/');
+    // if (formData.password !== formData.confirmPassword) {
+    //   alert('Passwords do not match');
+    //   return;
+    // }
+    // login({ id: '1', name: formData.name });
+    register(formData, () => navigate('/'), (error) => console.error('Register error:', error));
   };
 
   return (
