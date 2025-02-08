@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(data));
       onSuccess(data);
     }).catch((error) => {
-      console.error('Login error:', error);
       onError(error);
     });
   };
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(data));
       onSuccess(data);
     }).catch((error) => {
-      console.error('Register error:', error);
       onError(error);
     });
   }

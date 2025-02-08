@@ -23,7 +23,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Login error:', error);
             throw error;
         }
     },
@@ -38,7 +37,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Register error:', error);
             throw error;
         }
     },
@@ -49,7 +47,6 @@ export const api = {
             const response = await fetch(eventBaseUrl);
             return await handleResponse(response);
         } catch (error) {
-            console.error('Get events error:', error);
             throw error;
         }
     },
@@ -59,7 +56,6 @@ export const api = {
             const response = await fetch(`${eventBaseUrl}/${eventId}`);
             return await handleResponse(response);
         } catch (error) {
-            console.error('Get event by id error:', error);
             throw error;
         }
     },
@@ -75,7 +71,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Create event error:', error);
             throw error;
         }
     },
@@ -91,7 +86,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Update event error:', error);
             throw error;
         }
     },
@@ -106,7 +100,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Delete event error:', error);
             throw error;
         }
     },
@@ -121,7 +114,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Join event error:', error);
             throw error;
         }
     },
@@ -136,7 +128,6 @@ export const api = {
             });
             return await handleResponse(response);
         } catch (error) {
-            console.error('Leave event error:', error);
             throw error;
         }
     },
