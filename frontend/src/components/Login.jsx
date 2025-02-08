@@ -11,8 +11,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login({ id: '1', name: credentials.email });
-    navigate('/');
+    login({ email: credentials.email, password: credentials.password }, () => navigate('/'), (error) => console.error('Login error:', error));
   };
 
   const handleGuestLogin = () => {
