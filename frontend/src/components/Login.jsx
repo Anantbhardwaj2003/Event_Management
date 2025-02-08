@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
@@ -8,10 +8,15 @@ function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const { login, guestLogin } = useAuth();
   const navigate = useNavigate();
+  const [alertMessage, setAlertMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login({ email: credentials.email, password: credentials.password }, () => navigate('/'), (error) => console.error('Login error:', error));
+    login(
+      { email: credentials.email, password: credentials.password },
+      () => navigate('/'),
+      (error) => setAlertMessage('Please Register!')
+    );
   };
 
   const handleGuestLogin = () => {
@@ -19,13 +24,26 @@ function Login() {
     navigate('/');
   };
 
+  useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => setAlertMessage(''), 1000); // Alert disappears after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="min-h-[80vh] flex items-center justify-center"
     >
-      <div className="max-w-md w-full bg-white rounded-xl shadow-xl p-8 space-y-8">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-xl p-8 space-y-8 relative">
+        {alertMessage && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md">
+            {alertMessage}
+          </div>
+        )}
+
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
           <p className="text-gray-600">Sign in to manage your events</p>
