@@ -25,12 +25,14 @@ function CreateEvent() {
     maxAttendees: '',
     location: '',
     tags: [],
-    image: ''
+    image: '',
+    imageFile: null
   });
   
   const [currentTag, setCurrentTag] = useState('');
   const [errors, setErrors] = useState({});
   const [showPreview, setShowPreview] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(''); // For image preview
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -42,6 +44,7 @@ function CreateEvent() {
     if (!eventData.category) newErrors.category = 'Category is required';
     if (!eventData.maxAttendees) newErrors.maxAttendees = 'Maximum attendees is required';
     if (!eventData.location.trim()) newErrors.location = 'Location is required';
+    if (!eventData.image && !eventData.imageFile) newErrors.image = 'Event image is required';
     
     // Validate date is not in the past
     if (eventData.date) {
@@ -53,6 +56,26 @@ function CreateEvent() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setErrors({ ...errors, imageFile: 'Image size should be less than 5MB' });
+        return;
+      }
+
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        setErrors({ ...errors, imageFile: 'Please upload a valid image file (JPEG, PNG, or GIF)' });
+        return;
+      }
+
+      setEventData({ ...eventData, imageFile: file, image: '' }); // Clear URL if file is uploaded
+      setPreviewUrl(URL.createObjectURL(file));
+      setErrors({ ...errors, imageFile: null, image: null });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -239,6 +262,41 @@ function CreateEvent() {
               </option>
             ))}
           </select>
+        ) : field.type === 'file' ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-center w-full">
+              <label className="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-indigo-500 transition-colors">
+                <PhotoIcon className="w-12 h-12 text-gray-400" />
+                <span className="mt-2 text-sm text-gray-500">Click to upload image</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={field.onChange}
+                  required={field.required}
+                />
+              </label>
+            </div>
+            {previewUrl && (
+              <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewUrl('');
+                    setEventData({ ...eventData, imageFile: null });
+                  }}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <input
             type={field.type}
@@ -322,13 +380,13 @@ function CreateEvent() {
 
                 <div>
                   {renderField({
-                    label: "Event Image URL",
-                    type: "url",
-                    value: eventData.image,
-                    onChange: (e) => setEventData({ ...eventData, image: e.target.value }),
-                    placeholder: "https://example.com/image.jpg",
+                    label: "Upload Image",
+                    type: "file",
+                    onChange: handleImageChange,
+                    required: true,
                     icon: PhotoIcon,
-                    tooltip: "Add an image URL to showcase your event"
+                    error: errors.imageFile || errors.image,
+                    tooltip: "Upload an image for your event (max 5MB, JPEG/PNG/GIF)"
                   })}
                 </div>
               </div>
