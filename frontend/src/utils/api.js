@@ -42,9 +42,9 @@ export const api = {
     },
 
     // Events
-    getEvents: async () => {
+    getEvents: async (search = "", category = "", timeframe = "") => {
         try {
-            const response = await fetch(eventBaseUrl);
+            const response = await fetch(`${eventBaseUrl}?search=${search}&category=${category}&timeframe=${timeframe}`);
             return await handleResponse(response);
         } catch (error) {
             throw error;

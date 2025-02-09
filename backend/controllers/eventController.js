@@ -26,8 +26,25 @@ const createEvent = async (req, res) => {
 
 // Get all events
 const getEvents = async (req, res) => {
-  const events = await Event.find().populate('user', 'name email').populate('attendees', 'name email');
-  res.json(events);
+  //query parameters
+  const { category, timeframe, search } = req.query;
+  const filters = {};
+  if (category && category.trim().length > 0) {
+    filters.category = category;
+  }
+  if (timeframe && timeframe.trim().length > 0) {
+    filters.date = timeframe === 'past' ? { $lte: new Date() } : { $gt: new Date() };
+  }
+  if (search && search.trim().length > 0) {
+    filters.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+      { location: { $regex: search, $options: 'i' } },
+    ];
+  }
+  const events = await Event.find(filters).populate('user', 'name email').populate('attendees', 'name email');
+  res.json(events.map(event => ({ ...event.toObject(), attendees: event.attendees.length })));
+  // res.json(events);
 };
 
 // Get a single event by ID
