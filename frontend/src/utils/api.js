@@ -1,6 +1,6 @@
 import { Auth } from "./auth";
 
-const HOST = 'http://localhost:5000';
+const HOST = 'https://eventmanagement-rxzo.onrender.com';
 const userBaseUrl = `${HOST}/api/users`;
 const eventBaseUrl = `${HOST}/api/events`;
 
