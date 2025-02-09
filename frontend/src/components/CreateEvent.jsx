@@ -91,6 +91,9 @@ function CreateEvent() {
           formData.append(key, eventData[key]);
         }
       });
+      formData.delete('image'); // Remove image URL
+      formData.delete('imageFile'); // Remove image file
+      formData.append('image', eventData.imageFile); // Add image file
       api.createEvent(formData, Auth.getUser().token).then(() => {
         navigate('/');
       }).catch((error) => {
