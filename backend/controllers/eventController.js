@@ -43,7 +43,7 @@ const getEvents = async (req, res) => {
     ];
   }
   const events = await Event.find(filters).populate('user', 'name email').populate('attendees', 'name email');
-  res.json(events.map(event => ({...event.toObject(), attendees: event.attendees.length})));
+  res.json(events.map(event => ({ ...event.toObject(), attendees: event.attendees.length })));
   // res.json(events);
 };
 

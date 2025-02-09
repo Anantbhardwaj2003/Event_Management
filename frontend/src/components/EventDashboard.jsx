@@ -1,67 +1,61 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, UserGroupIcon, MapPinIcon, TagIcon } from '@heroicons/react/24/outline';
 import { api } from '../utils/api';
 
-
 function EventDashboard() {
   const [filter, setFilter] = useState({ category: '', timeFrame: 'upcoming', search: '' });
-  const [filteredEvents, setFilteredEvents] = useState([]);}
-function EventDashboard() {
-  const [filter, setFilter] = useState({ category: 'all', timeFrame: 'upcoming', search: '' });
-  
+  const [filteredEvents, setFilteredEvents] = useState([]);
   // Enhanced mock data with more realistic events
-  const events = [
-    {
-      id: 1,
-      name: 'Tech Conference 2024',
-      description: 'Join industry leaders for a day of innovation and networking. Featuring keynote speakers from top tech companies.',
-      date: '2024-04-15',
-      time: '09:00',
-      category: 'Technology',
-      attendees: 120,
-      location: 'Convention Center',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      tags: ['AI', 'Web3', 'Cloud']
-    },
-    {
-      id: 2,
-      name: 'Summer Music Festival',
-      description: 'Experience an unforgettable day of live music performances across multiple stages featuring both established and emerging artists.',
-      date: '2024-07-01',
-      time: '14:00',
-      category: 'Music',
-      attendees: 500,
-      location: 'Central Park',
-      image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      tags: ['Live Music', 'Festival', 'Summer']
-    },
-    {
-      id: 3,
-      name: 'Business Leadership Summit',
-      description: 'Connect with business leaders and learn about the latest trends in management, leadership, and innovation.',
-      date: '2024-05-20',
-      time: '10:00',
-      category: 'Business',
-      attendees: 250,
-      location: 'Grand Hotel',
-      image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      tags: ['Leadership', 'Networking', 'Innovation']
-    }
-  ];
+  // const events = [
+  //   {
+  //     id: 1,
+  //     name: 'Tech Conference 2024',
+  //     description: 'Join industry leaders for a day of innovation and networking. Featuring keynote speakers from top tech companies.',
+  //     date: '2024-04-15',
+  //     time: '09:00',
+  //     category: 'Technology',
+  //     attendees: 120,
+  //     location: 'Convention Center',
+  //     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+  //     tags: ['AI', 'Web3', 'Cloud']
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Summer Music Festival',
+  //     description: 'Experience an unforgettable day of live music performances across multiple stages featuring both established and emerging artists.',
+  //     date: '2024-07-01',
+  //     time: '14:00',
+  //     category: 'Music',
+  //     attendees: 500,
+  //     location: 'Central Park',
+  //     image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+  //     tags: ['Live Music', 'Festival', 'Summer']
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Business Leadership Summit',
+  //     description: 'Connect with business leaders and learn about the latest trends in management, leadership, and innovation.',
+  //     date: '2024-05-20',
+  //     time: '10:00',
+  //     category: 'Business',
+  //     attendees: 250,
+  //     location: 'Grand Hotel',
+  //     image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+  //     tags: ['Leadership', 'Networking', 'Innovation']
+  //   }
+  // ];
 
-  const filteredEvents = events.filter(event => {
-    const isMatchingCategory = filter.category === 'all' || event.category === filter.category;
-    const eventDate = new Date(event.date);
-    const isUpcoming = filter.timeFrame === 'upcoming' ? 
-      eventDate >= new Date() : eventDate < new Date();
-    const matchesSearch = event.name.toLowerCase().includes(filter.search.toLowerCase()) ||
-      event.description.toLowerCase().includes(filter.search.toLowerCase()) ||
-      event.location.toLowerCase().includes(filter.search.toLowerCase());
-    return isMatchingCategory && isUpcoming && matchesSearch;
-  });
+  useEffect(() => {
+    api.getEvents(filter.search, filter.category, filter.timeFrame).then(events => {
+      console.log('Events loaded:', events);
+      setFilteredEvents(events);
+    }).catch(error => {
+      console.error('Error loading events:', error);
+    });
+  }, [filter]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -107,7 +101,7 @@ function EventDashboard() {
             value={filter.category}
             onChange={(e) => setFilter({ ...filter, category: e.target.value })}
           >
-            <option value="all">All Categories</option>
+            <option value="">All Categories</option>
             <option value="Technology">Technology</option>
             <option value="Music">Music</option>
             <option value="Sports">Sports</option>
@@ -157,7 +151,7 @@ function EventDashboard() {
               <div className="space-y-3">
                 <div className="flex items-center text-gray-500">
                   <CalendarIcon className="w-5 h-5 mr-2" />
-                  <span>{format(new Date(event.date), 'MMM dd, yyyy')} at {event.time}</span>
+                  <span>{format(new Date(event.date), 'MMM dd, yyyy')} at {format(new Date(event.date), 'HH:mm')}</span>
                 </div>
                 
                 <div className="flex items-center text-gray-500">
