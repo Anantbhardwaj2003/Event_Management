@@ -1,5 +1,5 @@
 import { Auth } from "./auth";
-const HOST = 'https://eventmanagement-rxzo.onrender.com/';
+const HOST = 'https://eventmanagement-rxzo.onrender.com';
 const userBaseUrl = `${HOST}/api/users`;
 const eventBaseUrl = `${HOST}/api/events`;
 
