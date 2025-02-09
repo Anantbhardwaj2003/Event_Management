@@ -91,6 +91,7 @@ function CreateEvent() {
           formData.append(key, eventData[key]);
         }
       });
+      formData.set('date', new Date(`${eventData.date}T${eventData.time}`).toISOString());
       formData.delete('image'); // Remove image URL
       formData.delete('imageFile'); // Remove image file
       formData.append('image', eventData.imageFile); // Add image file
