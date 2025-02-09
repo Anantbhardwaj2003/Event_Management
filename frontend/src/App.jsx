@@ -6,6 +6,7 @@ import EventDashboard from './components/EventDashboard';
 import CreateEvent from './components/CreateEvent';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import EventDetails from './components/EventDetails';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
                   <EventDashboard />
                 </PrivateRoute>
               } />
+               <Route path="/event/:id" element={<EventDetails />} />
               <Route path="/create-event" element={
                 <PrivateRoute>
                   <CreateEvent />

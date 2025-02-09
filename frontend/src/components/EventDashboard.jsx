@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, UserGroupIcon, MapPinIcon, TagIcon } from '@heroicons/react/24/outline';
 import { api } from '../utils/api';
 
 function EventDashboard() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({ category: '', timeFrame: 'upcoming', search: '' });
   const [filteredEvents, setFilteredEvents] = useState([]);
   // Enhanced mock data with more realistic events
@@ -72,6 +73,10 @@ function EventDashboard() {
     show: { opacity: 1, y: 0 }
   };
 
+  const handleViewDetails = (eventId) => {
+    navigate(`/event/${eventId}`);
+  };
+
   return (
     <div className="space-y-8">
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
@@ -119,7 +124,7 @@ function EventDashboard() {
         </div>
       </div>
 
-      <motion.div 
+      <motion.div
         className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
         variants={container}
         initial="hidden"
@@ -143,28 +148,28 @@ function EventDashboard() {
                 </span>
               </div>
             </div>
-            
+
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
               <p className="text-gray-600 mb-4">{event.description}</p>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center text-gray-500">
                   <CalendarIcon className="w-5 h-5 mr-2" />
                   <span>{format(new Date(event.date), 'MMM dd, yyyy')} at {format(new Date(event.date), 'HH:mm')}</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-500">
                   <MapPinIcon className="w-5 h-5 mr-2" />
                   <span>{event.location}</span>
                 </div>
-                
+
                 <div className="flex items-center text-gray-500">
                   <UserGroupIcon className="w-5 h-5 mr-2" />
                   <span>{event.attendees} attendees</span>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex flex-wrap gap-2">
                 {event.tags.map(tag => (
                   <span
@@ -176,15 +181,19 @@ function EventDashboard() {
                   </span>
                 ))}
               </div>
-              
-              <button className="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-200">
+
+              <button 
+                onClick={() => handleViewDetails(event._id)}
+                className="mt-6 w-full bg-indigo-50 text-indigo-600 py-2 px-4 rounded-lg hover:bg-indigo-100 transition-colors duration-200"
+              >
                 View Details
               </button>
+
             </div>
           </motion.div>
         ))}
       </motion.div>
-      
+
       {filteredEvents.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
