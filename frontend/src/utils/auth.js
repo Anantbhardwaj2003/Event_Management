@@ -18,7 +18,7 @@ const removeUser = () => {
 
 export const Auth = {
     isLoggedIn: () => {
-        return getUser() !== null;
+        return getUser() !== null && getUser().token !== null;
     },
     logout: () => {
         removeUser();

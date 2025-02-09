@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { createEvent, getEvents, getEventById, updateEvent, deleteEvent, joinEvent, leaveEvent } = require('../controllers/eventController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, includeUser } = require('../middleware/authMiddleware');
 const upload = require('../middleware/upload');
 
 // Route to create a new event (protected route)
@@ -11,7 +11,7 @@ router.post('/', protect, upload.single('image'), createEvent);
 router.get('/', getEvents);
 
 // Route to get a single event by ID
-router.get('/:id', getEventById);
+router.get('/:id', includeUser, getEventById);
 
 // Route to update an event (protected route)
 router.put('/:id', protect, upload.single('image'), updateEvent);

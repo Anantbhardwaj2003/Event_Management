@@ -6,6 +6,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const Event = require('./models/eventModel'); // Import Event model
 const jwt = require('jsonwebtoken'); // Import JWT for token verification
+const { register } = require('module');
 
 // Load environment variables
 dotenv.config();
@@ -66,7 +67,7 @@ io.on('connection', (socket) => {
 
       event.attendees.push(userId);
       await event.save();
-      io.emit('eventUpdated', { eventId: event._id, attendees: event.attendees.length });
+      io.emit('eventUpdated', { eventId: event._id, attendees: event.attendees.length, id: socket.id, registered: true });
     } else {
       socket.emit('error', { message: 'Event not found' });
     }
@@ -78,11 +79,15 @@ io.on('connection', (socket) => {
       return socket.emit('error', { message: 'User not authenticated' });
     }
 
-    const event = await Event.findById(eventId);
+    const event = await Event.findById(eventId).populate('attendees');
     if (event) {
-      event.attendees = event.attendees.filter(id => id !== userId);
+      const index = event.attendees.findIndex(attendee => attendee.id === userId);
+      if (index === -1) {
+        return socket.emit('error', { message: 'You have not joined this event' });
+      }
+      event.attendees.splice(index, 1);
       await event.save();
-      io.emit('eventUpdated', { eventId: event._id, attendees: event.attendees.length });
+      io.emit('eventUpdated', { eventId: event._id, attendees: event.attendees.length, id: socket.id, registered: false });
     } else {
       socket.emit('error', { message: 'Event not found' });
     }

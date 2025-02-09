@@ -1,3 +1,5 @@
+import { Auth } from "./auth";
+
 const HOST = 'http://localhost:5000';
 const userBaseUrl = `${HOST}/api/users`;
 const eventBaseUrl = `${HOST}/api/events`;
@@ -53,7 +55,15 @@ export const api = {
 
     getEventById: async (eventId) => {
         try {
-            const response = await fetch(`${eventBaseUrl}/${eventId}`);
+            const headers = {};
+            if(Auth.isLoggedIn()) {
+                headers.Authorization = `Bearer ${Auth.getUser().token}`;
+            }
+            const response = await fetch(`${eventBaseUrl}/${eventId}`,
+                {
+                    headers: headers,
+                }
+            );
             return await handleResponse(response);
         } catch (error) {
             throw error;
@@ -66,6 +76,7 @@ export const api = {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    ContentType: 'multipart/form-data',
                 },
                 body: eventData,
             });
