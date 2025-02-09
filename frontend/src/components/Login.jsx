@@ -26,7 +26,7 @@ function Login() {
 
   useEffect(() => {
     if (alertMessage) {
-      const timer = setTimeout(() => setAlertMessage(''), 1000); // Alert disappears after 3 seconds
+      const timer = setTimeout(() => setAlertMessage(''), 500);
       return () => clearTimeout(timer);
     }
   }, [alertMessage]);
