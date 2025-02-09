@@ -12,6 +12,8 @@ import {
   InformationCircleIcon,
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
+import { api } from '../utils/api';
+import { Auth } from '../utils/auth';
 
 function CreateEvent() {
   const [eventData, setEventData] = useState({
@@ -56,8 +58,21 @@ function CreateEvent() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Event created:', eventData);
-      navigate('/');
+      // console.log('Event created:', eventData);
+      // navigate('/');
+      const formData = new FormData();
+      Object.keys(eventData).forEach(key => {
+        if (key === 'tags') {
+          eventData[key].forEach(tag => formData.append('tags[]', tag));
+        } else {
+          formData.append(key, eventData[key]);
+        }
+      });
+      api.createEvent(formData, Auth.getUser().token).then(() => {
+        navigate('/');
+      }).catch((error) => {
+        console.error('Error creating event:', error);
+      });
     } else {
       // Scroll to first error
       const firstError = document.querySelector('[data-error="true"]');
