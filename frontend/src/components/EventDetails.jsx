@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Calendar, Users, MapPin, Tag, ArrowLeft, Share2, Heart, MessageSquare } from 'lucide-react';
 import { api } from '../utils/api';
+import io from 'socket.io-client';
+import { Auth } from '../utils/auth';
+
+const socket = io('http://localhost:5000');
 
 function EventDetails() {
   const { id } = useParams();
@@ -11,11 +15,11 @@ function EventDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(id)
     if (id) {
       api.getEventById(id)
         .then(eventData => {
           setEvent(eventData);
+          console.log(eventData)
           setLoading(false);
         })
         .catch(error => {
@@ -23,7 +27,34 @@ function EventDetails() {
           setLoading(false);
         });
     }
+    // Authenticate the user with the token
+    if (Auth.isLoggedIn()) {
+      socket.emit('authenticate', Auth.getUser().token);
+    }
+
+    return () => {
+      socket.off('eventUpdated');
+    };
   }, [id]);
+
+  // Listen for real-time updates
+  socket.on('eventUpdated', (updatedEvent) => {
+    if (updatedEvent.eventId == id) {
+      setEvent({ ...event, attendees: updatedEvent.attendees, registered: (socket.id === updatedEvent.id) ? updatedEvent.registered : event.registered });
+    }
+  });
+
+  socket.on('error', (error) => {
+    console.error('Socket error:', error);
+  });
+
+  const joinEvent = (eventId) => {
+    socket.emit('joinEvent', eventId);
+  };
+
+  const leaveEvent = (eventId) => {
+    socket.emit('leaveEvent', eventId);
+  };
 
   if (loading) {
     return (
@@ -89,10 +120,10 @@ function EventDetails() {
             <Calendar className="w-6 h-6 mr-3" />
             <div>
               <p className="font-medium">{format(new Date(event.date), 'MMMM dd, yyyy')}</p>
-              <p>{event.time}</p>
+              <p>{format(new Date(event.date), 'HH:mm')}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center text-gray-600">
             <MapPin className="w-6 h-6 mr-3" />
             <div>
@@ -100,12 +131,12 @@ function EventDetails() {
               <p>Venue</p>
             </div>
           </div>
-          
+
           <div className="flex items-center text-gray-600">
             <Users className="w-6 h-6 mr-3" />
             <div>
               <p className="font-medium">{event.attendees} people</p>
-              <p>Attendees</p>
+              <p>Attending</p>
             </div>
           </div>
         </div>
@@ -132,9 +163,15 @@ function EventDetails() {
 
         <div className="border-t pt-8">
           <div className="flex justify-between items-center">
-            <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-              Register for Event
-            </button>
+            {!Auth.isLoggedIn ? (<></>) : event.registered ? (
+              <button className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors duration-200" onClick={() => leaveEvent(event._id)}>
+                Leave Event
+              </button>
+            ) : (
+              <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200" onClick={() => joinEvent(event._id)}>
+                Register for Event
+              </button>
+            )}
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
               <MessageSquare className="w-5 h-5" />
               Contact Organizer
