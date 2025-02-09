@@ -105,7 +105,7 @@ function EventDetails() {
             <Users className="w-6 h-6 mr-3" />
             <div>
               <p className="font-medium">{event.attendees} people</p>
-              <p>Attending</p>
+              <p>Attendees</p>
             </div>
           </div>
         </div>

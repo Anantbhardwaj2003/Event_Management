@@ -30,4 +30,28 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const includeUser = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      // Get token from header
+      token = req.headers.authorization.split(' ')[1];
+
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Get user from the token
+      req.user = await User.findById(decoded.id).select('-password');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  next();
+};
+
+module.exports = { protect, includeUser };

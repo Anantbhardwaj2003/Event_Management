@@ -23,12 +23,12 @@ function App() {
                   <EventDashboard />
                 </PrivateRoute>
               } />
-               <Route path="/event/:id" element={<EventDetails />} />
               <Route path="/create-event" element={
                 <PrivateRoute>
                   <CreateEvent />
                 </PrivateRoute>
               } />
+              <Route path="/event/:id" element={<EventDetails />} />
             </Routes>
           </div>
         </div>

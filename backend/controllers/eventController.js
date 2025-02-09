@@ -49,10 +49,10 @@ const getEvents = async (req, res) => {
 
 // Get a single event by ID
 const getEventById = async (req, res) => {
-  const event = await Event.findById(req.params.id).populate('user', 'name email').populate('attendees', 'name email');
-
+  const event = await Event.findById(req.params.id).populate('user', 'name email').populate('attendees', '_id');
   if (event) {
-    res.json(event);
+    const isRegistered = req.user ? event.attendees.some(attendee => attendee._id.toString() === req.user._id.toString()) : false;
+    res.json({ ...event.toObject(), attendees: event.attendees.length, registered: isRegistered });
   } else {
     res.status(404).json({ message: 'Event not found' });
   }
