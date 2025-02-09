@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, UserGroupIcon, MapPinIcon, TagIcon } from '@heroicons/react/24/outline';
+import { api } from '../utils/api';
 
+
+function EventDashboard() {
+  const [filter, setFilter] = useState({ category: '', timeFrame: 'upcoming', search: '' });
+  const [filteredEvents, setFilteredEvents] = useState([]);}
 function EventDashboard() {
   const [filter, setFilter] = useState({ category: 'all', timeFrame: 'upcoming', search: '' });
   
